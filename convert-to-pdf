@@ -1,33 +1,63 @@
-name: GitHub Actions Demo 
+# .github/workflows/convert-to-pdf.yml 
 
-on: [push] 
+ 
+
+name: Docs to PDF 
+
+# This workflow is triggered on pushes to the repository. 
+
+on: 
+
+  push: 
+
+    branches: 
+
+      - master 
+
+    # Paths can be used to only trigger actions when you have edited certain files, such as a file within the /docs directory 
+
+    paths: 
+
+      - 'docs/**.md' 
+
+      - 'docs/images/**' 
+
+ 
 
 jobs: 
 
-  Explore-GitHub-Actions: 
+  converttopdf: 
+
+    name: Build PDF 
 
     runs-on: ubuntu-latest 
 
     steps: 
 
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event." 
+      - uses: actions/checkout@v2 
 
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!" 
+      - uses: baileyjm02/markdown-to-pdf@v1 
 
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}." 
+        with: 
 
-      - name: Check out repository code 
+          input_dir: docs 
 
-        uses: actions/checkout@v3 
+          output_dir: pdfs 
 
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner." 
+          images_dir: docs/images 
 
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner." 
+          # for example <img src="./images/file-name.png"> 
 
-      - name: List files in the repository 
+          image_import: ./images 
 
-        run: | 
+          # Default is true, can set to false to only get PDF files 
 
-          ls ${{ github.workspace }} 
+          build_html: false 
 
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - uses: actions/upload-artifact@v1 
+
+        with: 
+
+          name: docs 
+
+          path: pdfs 
